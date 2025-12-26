@@ -1,0 +1,30 @@
+# ArgoCD Web UI Ingress via Cloudflare Tunnel
+# Exposes the ArgoCD server through the cloudflare tunnel named 'argocd-tunnel'
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    # Use Cloudflare Tunnel Ingress Controller
+    kubernetes.io/ingress.class: cloudflare-tunnel
+    # Specify the tunnel name
+    cloudflare-tunnel-ingress-controller.strrl.dev/tunnel-name: argocd-tunnel
+    # Backend protocol configuration for ArgoCD (uses HTTPS internally)
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: https
+    # Disable TLS verification since ArgoCD uses self-signed cert by default
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+  - host: argocd.fiftytoo.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
