@@ -19,8 +19,6 @@ kubeconfig*
 *.kubeconfig
 
 # Ignore secret files
-*secret*.yaml
-*secret*.yml
 *.key
 *.pem
 *.crt
